@@ -1,38 +1,101 @@
-﻿namespace CharacterConsole;
+﻿using System;
+using System.IO;
 
 class Program
 {
+    static string filePath = "input.csv";
+    static CharacterReader reader = new CharacterReader(filePath);
+    static CharacterWriter writer = new CharacterWriter(filePath);
+
     static void Main()
     {
-        var input = new ConsoleInput();
-        var output = new ConsoleOutput();
+        while (true)
+        {
+            Console.WriteLine("Menu:");
+            Console.WriteLine("1. Display Characters");
+            Console.WriteLine("2. Find Character");
+            Console.WriteLine("3. Add Character");
+            Console.WriteLine("4. Level Up Character");
+            Console.WriteLine("5. Exit");
+            Console.Write("Enter your choice: ");
+            string choice = Console.ReadLine();
 
-        // Create an instance of CharacterManager and call the Run method to start the program
-        // This will enable the user to interact with the program and manage characters
-        // The reason for creating an instance of CharacterManager is to separate the concerns of the program
-        // This will allow for easier testing and maintenance of the program
-        var manager = new CharacterManager(input, output);
-        manager.Run();
+            switch (choice)
+            {
+                case "1":
+                    DisplayAllCharacters();
+                    break;
+                case "2":
+                    FindCharacter();
+                    break;
+                case "3":
+                    AddCharacter();
+                    break;
+                case "4":
+                    LevelUpCharacter();
+                    break;
+                case "5":
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    break;
+            }
+        }
     }
-}
 
-class ConsoleInput : IInput
-{
-    public string ReadLine()
+    static void DisplayAllCharacters()
     {
-        return Console.ReadLine();
-    }
-}
-
-class ConsoleOutput : IOutput
-{
-    public void WriteLine(string message)
-    {
-        Console.WriteLine(message);
+        reader.DisplayAllCharacters();
     }
 
-    public void Write(string message)
+    static void FindCharacter()
     {
-        Console.Write(message);
+        Console.Write("Enter the name of the character to find: ");
+        string nameToFind = Console.ReadLine();
+        Character foundCharacter = reader.FindCharacterByName(nameToFind);
+        if (foundCharacter != null)
+        {
+            Console.WriteLine(foundCharacter);
+        }
+        else
+        {
+            Console.WriteLine("Character not found.");
+        }
+    }
+
+    static void AddCharacter()
+    {
+        Console.Write("Enter character name: ");
+        string name = Console.ReadLine();
+
+        Console.Write("Enter character class: ");
+        string characterClass = Console.ReadLine();
+
+        Console.Write("Enter character level: ");
+        if (!int.TryParse(Console.ReadLine(), out int level))
+        {
+            Console.WriteLine("Invalid level. Please enter a number.");
+            return;
+        }
+
+        Console.Write("Enter character hit points: ");
+        if (!int.TryParse(Console.ReadLine(), out int hitPoints))
+        {
+            Console.WriteLine("Invalid hit points. Please enter a number.");
+            return;
+        }
+
+        Console.Write("Enter character equipment (separated by '|'): ");
+        string equipment = Console.ReadLine();
+
+        Character newCharacter = new Character(name, characterClass, level, hitPoints, equipment);
+        writer.AddCharacter(newCharacter);
+    }
+
+    static void LevelUpCharacter()
+    {
+        Console.Write("Enter the name of the character to level up: ");
+        string nameToLevelUp = Console.ReadLine();
+        writer.LevelUpCharacter(nameToLevelUp);
     }
 }
